@@ -1,20 +1,50 @@
 #!/bin/bash
-# Script de provisionamiento para el servidor balanceador
-# Instala HAProxy y configura el balanceo
+# Script for HAProxy Load Balancer with HTTPS termination
+
 sudo apt update
-sudo apt install haproxy -y
+sudo apt install -y haproxy openssl
 
-sudo tee -a /etc/haproxy/haproxy.cfg >/dev/null <<'EOF'
+# Create self-signed SSL certificate for Vagrant environment
+sudo openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
+  -keyout /etc/haproxy/selfsigned.key \
+  -out /etc/haproxy/selfsigned.crt \
+  -subj "/C=US/ST=None/L=None/O=LocalDev/OU=Dev/CN=lb.local"
 
-frontend wordpress_front
-        bind *:80
-        default_backend wordpress_nodes
+# Combine key + cert for HAProxy
+cat /etc/haproxy/selfsigned.key /etc/haproxy/selfsigned.crt \
+  | sudo tee /etc/haproxy/selfsigned.pem > /dev/null
+
+# Overwrite haproxy.cfg
+sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<'EOF'
+global
+    maxconn 2048
+    log /dev/log local0
+
+defaults
+    mode http
+    option httplog
+    option dontlognull
+    timeout connect 5s
+    timeout client  50s
+    timeout server  50s
+
+# HTTP \u2192 Redirect to HTTPS
+frontend http_front
+    bind *:80
+    redirect scheme https code 301 if !{ ssl_fc }
+
+# HTTPS termination
+frontend https_front
+    bind *:443 ssl crt /etc/haproxy/selfsigned.pem
+    option forwardfor
+    http-request set-header X-Forwarded-Proto https
+    default_backend wordpress_nodes
 
 backend wordpress_nodes
-        balance roundrobin
-        server ws1 192.168.10.21:80 check
-        server ws2 192.168.10.22:80 check
+    balance roundrobin
+    option httpchk GET /wp-login.php
+    server ws1 192.168.10.21:80 check
+    server ws2 192.168.10.22:80 check
 EOF
 
-# Restart HAProxy to apply changes
 sudo systemctl restart haproxy
