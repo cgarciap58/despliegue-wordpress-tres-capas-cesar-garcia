@@ -13,6 +13,7 @@
       lbs.vm.hostname = "LBS"
       lbs.vm.network "private_network", ip: "192.168.10.10", virtualbox__intnet: "LBNet"
       lbs.vm.network "forwarded_port", guest: 80, host: 8080
+      lbs.vm.network "forwarded_port", guest: 443, host: 8443
       lbs.vm.provision "shell", path: "provisionLB.sh"
     end
 

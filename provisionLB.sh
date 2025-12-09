@@ -4,18 +4,18 @@
 sudo apt update
 sudo apt install -y haproxy openssl
 
-# Create self-signed SSL certificate for Vagrant environment
+# Create self-signed SSL certificate for Vagrant tests
 sudo openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
   -keyout /etc/haproxy/selfsigned.key \
   -out /etc/haproxy/selfsigned.crt \
   -subj "/C=US/ST=None/L=None/O=LocalDev/OU=Dev/CN=lb.local"
 
-# Combine key + cert for HAProxy
+# Combine key + cert into .pem for HAProxy
 cat /etc/haproxy/selfsigned.key /etc/haproxy/selfsigned.crt \
-  | sudo tee /etc/haproxy/selfsigned.pem > /dev/null
+  | sudo tee /etc/haproxy/selfsigned.pem >/dev/null
 
 # Overwrite haproxy.cfg
-sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<'EOF'
+sudo tee /etc/haproxy/haproxy.cfg >/dev/null <<'EOF'
 global
     maxconn 2048
     log /dev/log local0
@@ -25,13 +25,13 @@ defaults
     option httplog
     option dontlognull
     timeout connect 5s
-    timeout client  50s
-    timeout server  50s
+    timeout client 50s
+    timeout server 50s
 
-# HTTP \u2192 Redirect to HTTPS
+# HTTP \u2192 HTTPS redirect
 frontend http_front
     bind *:80
-    redirect scheme https code 301 if !{ ssl_fc }
+    redirect scheme https code 301
 
 # HTTPS termination
 frontend https_front
@@ -42,7 +42,7 @@ frontend https_front
 
 backend wordpress_nodes
     balance roundrobin
-    option httpchk GET /wp-login.php
+    option httpchk GET /
     server ws1 192.168.10.21:80 check
     server ws2 192.168.10.22:80 check
 EOF

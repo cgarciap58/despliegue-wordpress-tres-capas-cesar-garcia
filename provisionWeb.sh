@@ -55,6 +55,12 @@ if [ ! -f /var/www/html/wp-config.php ]; then
     sudo -u www-data sed -i "s/'username_here'/'$user_wp'/g" wp-config.php
     sudo -u www-data sed -i "s/'password_here'/'$pass_wp'/g" wp-config.php
     sudo -u www-data sed -i "s/'localhost'/'$ip_db'/" wp-config.php
+    sudo -u www-data sed -i "/That's all, stop editing!/i \
+if (isset(\$_SERVER['HTTP_X_FORWARDED_PROTO']) && \$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { \
+    \$_SERVER['HTTPS'] = 'on'; \
+    \$_SERVER['SERVER_PORT'] = 443; \
+} \
+" wp-config.php
 fi
 
 
