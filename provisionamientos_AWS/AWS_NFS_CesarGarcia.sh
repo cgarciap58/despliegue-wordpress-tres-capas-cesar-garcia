@@ -8,7 +8,7 @@ sudo chown -R www-data:www-data /srv/nfs/wordpress
 sudo chmod 755 /srv/nfs/wordpress
 
 # Export to webservers only
-echo "/srv/nfs/wordpress 192.168.10.21(rw,sync,no_subtree_check) 192.168.10.22(rw,sync,no_subtree_check)" | sudo tee /etc/exports
+echo "/srv/nfs/wordpress 10.0.2.0/24(rw,sync,no_subtree_check)" | sudo tee /etc/exports
 
 # Apply exports and restart service
 sudo exportfs -ra

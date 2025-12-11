@@ -6,7 +6,7 @@
 # Credenciales de WordPress
 user_wp="wpuser"
 pass_wp="wppw"
-ip_db="192.168.20.50"
+ip_db="10.0.3.113"
 db_wp="wordpress"
 
 
@@ -19,11 +19,8 @@ sudo systemctl restart apache2.service
 
 sudo apt install nfs-common -y
 sudo mkdir -p /var/www/html
-sudo mount 192.168.10.25:/srv/nfs/wordpress /var/www/html
-echo "192.168.10.25:/srv/nfs/wordpress /var/www/html nfs defaults,_netdev 0 0" | sudo tee -a /etc/fstab
-
-# Troubleshoot: Test de php
-echo "<?php phpinfo(); ?>" | sudo -u www-data tee /var/www/html/info.php > /dev/null
+sudo mount 10.0.2.143:/srv/nfs/wordpress /var/www/html
+echo "10.0.2.143:/srv/nfs/wordpress /var/www/html nfs defaults,_netdev 0 0" | sudo tee -a /etc/fstab
 
 # Borramos el archivo de bienvenida de Apache para que WordPress sea la página principal
 if [ -f /var/www/html/index.html ]; then

@@ -28,7 +28,7 @@ defaults
     timeout client 50s
     timeout server 50s
 
-# HTTP \u2192 HTTPS redirect
+# HTTP -> HTTPS redirect
 frontend http_front
     bind *:80
     redirect scheme https code 301

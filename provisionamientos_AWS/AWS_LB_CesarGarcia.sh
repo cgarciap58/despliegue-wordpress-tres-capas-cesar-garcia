@@ -28,7 +28,7 @@ defaults
     timeout client 50s
     timeout server 50s
 
-# HTTP \u2192 HTTPS redirect
+# HTTP -> HTTPS redirect
 frontend http_front
     bind *:80
     redirect scheme https code 301
@@ -43,8 +43,8 @@ frontend https_front
 backend wordpress_nodes
     balance roundrobin
     option httpchk GET /
-    server ws1 192.168.10.21:80 check
-    server ws2 192.168.10.22:80 check
+    server ws1 10.0.2.235:80 check
+    server ws2 10.0.2.141:80 check
 EOF
 
 sudo systemctl restart haproxy
