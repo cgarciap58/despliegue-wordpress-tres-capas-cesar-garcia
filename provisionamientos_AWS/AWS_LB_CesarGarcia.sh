@@ -1,8 +1,8 @@
 #!/bin/bash
 # HAProxy Load Balancer + Let\u2019s Encrypt provisioning
 
-DOMAIN="myawsweb.tk"
-EMAIL="your-email@example.com"  # Certbot notifications
+DOMAIN="wpdecesar.ddns.net"
+EMAIL="cgarciap58@iesalbarregas.es"  # Certbot notifications
 WEBROOT="/var/www/certbot"
 
 # --- 1. Update OS & install dependencies ---
@@ -75,4 +75,4 @@ sudo systemctl restart haproxy
 # --- 8. Set up automatic certificate renewal ---
 (crontab -l 2>/dev/null; echo "0 0,12 * * * certbot renew --webroot -w $WEBROOT --post-hook 'systemctl reload haproxy'") | crontab -
 
-echo "\u2705 HAProxy configured with Let\u2019s Encrypt. HTTPS is active for $DOMAIN"
+echo "HAProxy configured with Let\u2019s Encrypt. HTTPS is active for $DOMAIN"
