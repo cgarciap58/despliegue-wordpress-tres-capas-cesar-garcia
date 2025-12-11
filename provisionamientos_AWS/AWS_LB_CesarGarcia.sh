@@ -1,35 +1,22 @@
 #!/bin/bash
-# HAProxy Load Balancer + Let\u2019s Encrypt provisioning
+# Script for HAProxy Load Balancer with HTTPS termination
 
 DOMAIN="wpdecesar.ddns.net"
-EMAIL="cgarciap58@iesalbarregas.es"  # Certbot notifications
-WEBROOT="/var/www/certbot"
+EMAIL="cgarciap58@iesalbarregas.es"
 
-# --- 1. Update OS & install dependencies ---
-sudo apt update -y
-sudo apt install -y haproxy certbot python3-certbot-nginx
+sudo apt update
+sudo apt install -y apache2 certbot python3-certbot-apache
 
-# --- 2. Create webroot for HTTP-01 challenge ---
-sudo mkdir -p $WEBROOT
-sudo chown -R www-data:www-data $WEBROOT
+sudo certbot --apache -d $DOMAIN -d www.$DOMAIN --email $EMAIL --agree-tos --non-interactive
 
-# --- 3. Start temporary HTTP server for Certbot ---
-# Runs in background during cert request
-sudo pkill -f "python3 -m http.server 8080" 2>/dev/null
-nohup sudo python3 -m http.server 8080 --directory $WEBROOT >/dev/null 2>&1 &
-
-# --- 4. Request certificate from Let\u2019s Encrypt ---
-sudo certbot certonly --webroot -w $WEBROOT \
-    -d $DOMAIN -d www.$DOMAIN \
-    --email $EMAIL --agree-tos --non-interactive
-
-# --- 5. Combine key + cert for HAProxy ---
 sudo cat /etc/letsencrypt/live/$DOMAIN/fullchain.pem \
-         /etc/letsencrypt/live/$DOMAIN/privkey.pem \
-         | sudo tee /etc/haproxy/haproxy.pem >/dev/null
+        /etc/letsencrypt/live/$DOMAIN/privkey.pem \
+        | sudo tee /etc/haproxy/$DOMAIN.pem
 
-# --- 6. Overwrite HAProxy config ---
-sudo tee /etc/haproxy/haproxy.cfg >/dev/null <<EOF
+sudo apt install -y haproxy
+
+# Se reescribe haproxy.cfg
+sudo tee /etc/haproxy/haproxy.cfg >/dev/null <<'EOF'
 global
     maxconn 2048
     log /dev/log local0
@@ -42,26 +29,18 @@ defaults
     timeout client 50s
     timeout server 50s
 
-# --- HTTP frontend ---
+# HTTP -> HTTPS redirect
 frontend http_front
     bind *:80
-    # Allow Certbot challenges
-    acl url_acme_challenge path_beg /.well-known/acme-challenge/
-    use_backend acme_backend if url_acme_challenge
-    # Redirect all other HTTP to HTTPS
-    redirect scheme https code 301 if !{ ssl_fc }
+    redirect scheme https code 301
 
-backend acme_backend
-    server local_certbot 127.0.0.1:8080
-
-# --- HTTPS frontend ---
+# HTTPS termination
 frontend https_front
-    bind *:443 ssl crt /etc/haproxy/haproxy.pem
+    bind *:443 ssl crt /etc/haproxy/$DOMAIN.pem
     option forwardfor
     http-request set-header X-Forwarded-Proto https
     default_backend wordpress_nodes
 
-# --- Backend webservers ---
 backend wordpress_nodes
     balance roundrobin
     option httpchk GET /
@@ -69,10 +48,4 @@ backend wordpress_nodes
     server ws2 10.0.2.141:80 check
 EOF
 
-# --- 7. Restart HAProxy ---
 sudo systemctl restart haproxy
-
-# --- 8. Set up automatic certificate renewal ---
-(crontab -l 2>/dev/null; echo "0 0,12 * * * certbot renew --webroot -w $WEBROOT --post-hook 'systemctl reload haproxy'") | crontab -
-
-echo "HAProxy configured with Let\u2019s Encrypt. HTTPS is active for $DOMAIN"
