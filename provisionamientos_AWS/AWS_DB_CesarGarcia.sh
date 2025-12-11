@@ -2,6 +2,8 @@
 # Script de provisionamiento para el servidor de base de datos
 # Instala MariaDB y configura los servicios básicos
 
+sudo hostnamectl set-hostname cesarGarciaDB
+
 sudo apt update
 sudo apt install mariadb-server -y
 sudo apt install net-tools -y

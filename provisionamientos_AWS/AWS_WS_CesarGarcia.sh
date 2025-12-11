@@ -10,6 +10,8 @@ ip_db="10.0.3.113"
 db_wp="wordpress"
 
 
+sudo hostnamectl set-hostname cesarGarciaWS
+
 sudo apt update
 sudo apt install apache2 -y
 sudo apt install mariadb-client -y

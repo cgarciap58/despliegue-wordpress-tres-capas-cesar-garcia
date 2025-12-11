@@ -1,4 +1,6 @@
 #!/bin/bash
+sudo hostnamectl set-hostname cesarGarciaNFS
+
 sudo apt update
 sudo apt install -y nfs-kernel-server
 

@@ -4,6 +4,8 @@
 DOMAIN="wpdecesar.ddns.net"
 EMAIL="cgarciap58@iesalbarregas.es"
 
+sudo hostnamectl set-hostname cesarGarciaLB
+
 sudo apt update
 sudo apt install -y apache2 certbot python3-certbot-apache
 
