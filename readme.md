@@ -74,3 +74,85 @@ sudo mysql -e "FLUSH PRIVILEGES;"
 sudo sed -i 's/bind-address.*/bind-address = 10.0.3.113/' /etc/mysql/mariadb.conf.d/50-server.cnf
 sudo systemctl restart mariadb
 ```
+
+## 3. Aprovisionamiento de los Servidores Web ([AWS_WS_CesarGarcia.sh](provisionamientos_AWS/AWS_WS_CesarGarcia.sh))
+
+Este script configura servidores web Apache con PHP y monta el recurso NFS compartido.
+
+Componentes Clave:
+- **Instalación de Apache y PHP**: Configura el servidor web y el runtime de PHP
+- **Montaje del recurso NFS**: Accede al directorio compartido del servidor NFS
+- **Permisos y seguridad**: Establece los permisos adecuados para WordPress
+- **Instalación de WordPress**: Descarga e instala WordPress desde la fuente oficial
+- **Configuración inicial de WordPress**: Prepara la instalación básica
+
+```bash
+
+#!/bin/bash
+# Script de provisionamiento para el servidor web
+# Instala Apache y configura los servicios básicos
+
+
+# Credenciales de WordPress
+user_wp="wpuser"
+pass_wp="wppw"
+ip_db="10.0.3.113"
+db_wp="wordpress"
+
+
+sudo hostnamectl set-hostname cesarGarciaWS
+
+sudo apt update
+sudo apt install apache2 -y
+sudo apt install mariadb-client -y
+sudo apt install libapache2-mod-php -y
+sudo apt install php php-mysql php-cli php-curl php-gd php-mbstring php-xml php-xmlrpc php-soap php-intl -y
+sudo systemctl restart apache2.service
+
+sudo apt install nfs-common -y
+sudo mkdir -p /var/www/html
+sudo mount 10.0.2.143:/srv/nfs/wordpress /var/www/html
+echo "10.0.2.143:/srv/nfs/wordpress /var/www/html nfs defaults,_netdev 0 0" | sudo tee -a /etc/fstab
+
+# Borramos el archivo de bienvenida de Apache para que WordPress sea la página principal
+if [ -f /var/www/html/index.html ]; then
+    sudo -u www-data rm /var/www/html/index.html
+fi
+
+
+sudo systemctl restart apache2
+
+
+# # Setup de WordPress
+if [ ! -f /var/www/html/wp-config.php ]; then
+    echo "Aún no existe wordpress, descargándolo..."
+
+    cd /tmp/
+    wget https://wordpress.org/latest.tar.gz
+    tar -xzf latest.tar.gz
+    sudo -u www-data cp -r wordpress/* /var/www/html/
+    sudo rm -rf wordpress latest.tar.gz
+    # sudo chown -R www-data:www-data /var/www/html
+    # sudo find /var/www/html -type d -exec chmod 755 {} \;
+    # sudo find /var/www/html -type f -exec chmod 644 {} \;
+    cd /var/www/html
+    sudo -u www-data cp wp-config-sample.php wp-config.php
+
+    # Configuramos WordPress con nuestras credenciales
+    echo "Configurando WordPress con las credenciales"
+    sudo -u www-data sed -i "s/'database_name_here'/'$db_wp'/g" wp-config.php
+    sudo -u www-data sed -i "s/'username_here'/'$user_wp'/g" wp-config.php
+    sudo -u www-data sed -i "s/'password_here'/'$pass_wp'/g" wp-config.php
+    sudo -u www-data sed -i "s/'localhost'/'$ip_db'/" wp-config.php
+    sudo -u www-data sed -i "/That's all, stop editing!/i \
+if (isset(\$_SERVER['HTTP_X_FORWARDED_PROTO']) && \$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') { \
+    \$_SERVER['HTTPS'] = 'on'; \
+    \$_SERVER['SERVER_PORT'] = 443; \
+} \
+" wp-config.php
+fi
+
+
+sudo systemctl restart apache2
+```
+
