@@ -324,7 +324,14 @@ Contamos con cinco instancias en total: una para el balanceador de carga y cuatr
 
 ### Route tables
 
+![Route tables AWS](./capturasAWS/route_tables.png)
+
 
 ### Grupos de seguridad
 
+![Grupos de seguridad AWS](./capturasAWS/grupos_seguridad.png)
+
 ### IP Elástica
+
+![IP Elástica AWS](./capturasAWS/ip_elastica.png)
+
