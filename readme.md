@@ -54,24 +54,45 @@ Medidas de seguridad
 Explicación Detallada:
 
 ```bash
-# Establece el nombre del host
+
+# Configuración inicial
 sudo hostnamectl set-hostname cesarGarciaDB
 
-# Instala MariaDB y herramientas de red
+# Instalación de MariaDB y herramientas de red
 sudo apt update
-sudo apt install -y mariadb-server mariadb-client net-tools
+sudo apt install mariadb-server -y
+sudo apt install net-tools -y
 
-# Securiza la instalación de MariaDB
-sudo mysql_secure_installation
+root_pass="roottoor"
+pass_wp="wppw"
 
-# Crea la base de datos y usuario para WordPress
-sudo mysql -e "CREATE DATABASE wordpress;"
-sudo mysql -e "CREATE USER 'wp_user'@'10.0.2.%' IDENTIFIED BY 'wp_password';"
-sudo mysql -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wp_user'@'10.0.2.%';"
-sudo mysql -e "FLUSH PRIVILEGES;"
+# Script equivalente a mysql_secure_installation
+sudo mariadb <<EOF
+DELETE FROM mysql.user WHERE User='';
 
-# Configura MariaDB para aceptar conexiones desde los servidores web
-sudo sed -i 's/bind-address.*/bind-address = 10.0.3.113/' /etc/mysql/mariadb.conf.d/50-server.cnf
+DROP USER IF EXISTS 'root'@'%';
+
+ALTER USER 'root'@'localhost' IDENTIFIED BY '$root_pass';
+
+DROP DATABASE IF EXISTS test;
+
+FLUSH PRIVILEGES;
+EOF
+
+# Configuración de base de datos y usuario
+mysql -u root -p"$root_pass" -e "CREATE DATABASE wordpress;"
+mysql -u root -p"$root_pass" -e "SHOW DATABASES;"
+mysql -u root -p"$root_pass" -e "CREATE USER 'wpuser'@'10.0.2.%' IDENTIFIED BY '$pass_wp';"
+mysql -u root -p"$root_pass" -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wpuser'@'10.0.2.%';"
+mysql -u root -p"$root_pass" -e "FLUSH PRIVILEGES;"
+
+echo "Base de datos y usuario configurados correctamente."
+echo "Contraseña root: $root_pass"
+echo "Contraseña wpuser: $pass_wp"
+
+# Configurar MariaDB para aceptar conexiones remotas en su IP (10.0.3.113)
+sudo sed -i "s/^bind-address\s*=.*/bind-address = 10.0.3.113/" /etc/mysql/mariadb.conf.d/50-server.cnf
+echo "MariaDB configurado para aceptar conexiones remotas en 10.0.3.113"
 sudo systemctl restart mariadb
 ```
 
