@@ -7,6 +7,7 @@ Este proyecto contiene scripts de aprovisionamiento para desplegar un sitio de W
 3. **Servidores Web** - Múltiples servidores Apache con PHP
 4. **Balanceador de Carga** - HAProxy con terminación SSL
 
+El Wordpress está alojado en <a href="https://wpdecesar.ddns.net">wpdecesar.ddns.net</a>
 
 # Índice 
 
