@@ -19,6 +19,7 @@ El Wordpress está alojado en <a href="https://wpdecesar.ddns.net">wpdecesar.ddn
 - [2. Aprovisionamiento del Servidor de Base de Datos](#database-server)
 - [3. Aprovisionamiento de los Servidores Web](#web-servers)
 - [4. Aplicación del Balanceador de Carga](#load-balancer)
+- [5. Configuración en AWS](#aws-configuration)
 
 <a name="nfs-server"></a>
 
@@ -229,29 +230,6 @@ sudo systemctl restart apache2
 
 ```bash
 #!/bin/bash
-# Script de balanceador de carga para WordPress utilizando HAProxy y CertBot
-
-DOMAIN="wpdecesar.ddns.net"
-EMAIL="cgarciap58@iesalbarregas.es"
-
-sudo hostnamectl set-hostname cesarGarciaLB
-
-sudo apt update
-sudo apt install -y apache2 certbot python3-certbot-apache
-
-sudo certbot --apache -d $DOMAIN -d www.$DOMAIN --email $EMAIL --agree-tos --non-interactive
-
-sudo cat /etc/letsencrypt/live/$DOMAIN/fullchain.pem \
-        /etc/letsencrypt/live/$DOMAIN/privkey.pem \
-        | sudo tee /etc/haproxy/$DOMAIN.pem
-
-sudo apt install -y haproxy
-```
-
-# Configuración de HAProxy
-```bash
-
-#!/bin/bash
 # Script para balanceador de carga en AWS para WordPress pero que permite pasar el reto Certbot
 
 # Establece variables de dominio y correo
@@ -310,7 +288,35 @@ backend wordpress_nodes
     server ws2 10.0.2.141:80 check
 EOF
 
+# Necesario parar y deshabilitar apache para que no se pelee con HAProxy en los puertos 80 y 443
+sudo systemctl stop apache2
+sudo systemctl disable apache2
+
 # Reinicia HAProxy para aplicar la configuración
 sudo systemctl restart haproxy
 
 ```
+
+## 5. Configuración en AWS
+
+### Subredes
+
+![Subredes AWS](./capturasAWS/subredes.png)
+
+Las subredes están configuradas para soportar la arquitectura de alta disponibilidad con balanceo de carga.
+
+- **Subred pública**: 10.0.1.0/24 (para el balanceador)
+- **Subred privada**: 10.0.2.0/24 (para los servidores web y el servidor NFS)
+- **Subred de base de datos**: 10.0.3.0/24 (para la instancia RDS, totalmente inaccesible al LB)
+
+### Instancias
+
+Contamos con cinco instancias en total: una para el balanceador de carga y cuatro para los servidores web.
+- **Balanceador**: cesarGarciaLB (10.0.2.100)
+- **Servidores web**: ws1 (10.0.2.235), ws2 (10.0.2.141), ws3 (10.0.2.150), ws4 (10.0.2.160)
+
+### Route tables
+
+### Grupos de seguridad
+
+### IP Elástica
