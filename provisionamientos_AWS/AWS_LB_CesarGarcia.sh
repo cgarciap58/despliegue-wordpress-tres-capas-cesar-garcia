@@ -57,5 +57,9 @@ backend wordpress_nodes
     server ws2 10.0.2.141:80 check
 EOF
 
+# Necesario parar y deshabilitar apache para que no se pelee con HAProxy en los puertos 80 y 443
+sudo systemctl stop apache2
+sudo systemctl disable apache2
+
 # Reinicia HAProxy para aplicar la configuración
 sudo systemctl restart haproxy
