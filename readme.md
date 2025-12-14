@@ -17,7 +17,7 @@ Este proyecto contiene scripts de aprovisionamiento para desplegar un sitio de W
 
 <a name="nfs-server"></a>
 
-## 1. Aprovisionamiento del Servidor NFS [AWS_NFS_CesarGarcia.sh](provisionamientos_AWS/AWS_NFS_CesarGarcia.sh)
+## 1. Aprovisionamiento del Servidor NFS ([AWS_NFS_CesarGarcia.sh](provisionamientos_AWS/AWS_NFS_CesarGarcia.sh))
 
 Este script configura un servidor NFS (Network File System) para compartir archivos de WordPress entre múltiples servidores web.
 
@@ -59,12 +59,12 @@ sudo systemctl restart nfs-kernel-server
 
 Este script configura un servidor MariaDB para WordPress con configuración segura.
 
-Componentes Clave:
-Instalación segura de MariaDB
-Creación de base de datos y usuario para WordPress
-Configuración de acceso remoto
-Medidas de seguridad
-Explicación Detallada:
+### Componentes Clave:
+- **Instalación segura de MariaDB**: Instala el servidor y herramientas de red
+- **Creación de base de datos y usuario**: Configura WordPress con credenciales seguras
+- **Configuración de acceso remoto**: Permite conexiones desde los servidores web
+- **Medidas de seguridad**: Elimina usuarios y bases de datos por defecto
+- **Explicación Detallada:**
 
 ```bash
 
@@ -108,6 +108,8 @@ sudo sed -i "s/^bind-address\s*=.*/bind-address = 10.0.3.113/" /etc/mysql/mariad
 echo "MariaDB configurado para aceptar conexiones remotas en 10.0.3.113"
 sudo systemctl restart mariadb
 ```
+
+<a name="web-servers"></a>
 
 ## 3. Aprovisionamiento de los Servidores Web ([AWS_WS_CesarGarcia.sh](provisionamientos_AWS/AWS_WS_CesarGarcia.sh))
 
@@ -190,14 +192,16 @@ fi
 sudo systemctl restart apache2
 ```
 
+<a name="load-balancer"></a>
 
-## 4. Aplicación del Balanceador de Carga [AWS_LB_CesarGarcia.sh](provisionamientos_AWS/AWS_LB_CesarGarcia.sh)
+
+## 4. Aplicación del Balanceador de Carga ([AWS_LB_CesarGarcia.sh](provisionamientos_AWS/AWS_LB_CesarGarcia.sh))
 
 Componentes Clave:
 
 - **Instalación de Apache y reto de CertBot**: Configura el servidor web y obtiene el certificado SSL
 - **Instalación de HAProxy**: Configura el balanceador de carga
-- **Redirección HTTP a HTTPS**: Redirige todo el tráfico a HTTPS
+- **Redirección HTTP a HTTPS**: Redirige todo el tráfico entrante a HTTPS
 - **Configuración de balanceo**: Configura el balanceo entre los servidores web
 
 
