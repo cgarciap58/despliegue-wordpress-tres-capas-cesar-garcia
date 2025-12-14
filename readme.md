@@ -21,31 +21,34 @@ Este proyecto contiene scripts de aprovisionamiento para desplegar un sitio de W
 
 Este script configura un servidor NFS (Network File System) para compartir archivos de WordPress entre múltiples servidores web.
 
-### Componentes Clave:
+### Componentes Clave
+
 - **Instalación de NFS**: Instala el paquete del servidor NFS
 - **Configuración de Directorios**: Crea `/srv/nfs/wordpress` con los permisos adecuados
 - **Exportación NFS**: Hace el directorio disponible para los servidores web
 - **Gestión del Servicio**: Habilita y reinicia el servicio NFS
 
-### Explicación Detallada:
+### Explicación Detallada
 
 ```bash
-# Establece el nombre del host
+#!/bin/bash
+# Script para configurar servidor NFS en AWS para WordPress
+# Configura el hostname
 sudo hostnamectl set-hostname cesarGarciaNFS
 
-# Actualiza e instala el servidor NFS
+# Instala el servidor NFS
 sudo apt update
 sudo apt install -y nfs-kernel-server
 
-# Crea el directorio compartido
+# Crea la carpeta compartida y da permisos al usuario de Apache
 sudo mkdir -p /srv/nfs/wordpress
 sudo chown -R www-data:www-data /srv/nfs/wordpress
 sudo chmod 755 /srv/nfs/wordpress
 
-# Configura las exportaciones NFS
+# Exporta la carpeta a la subred donde están los webservers
 echo "/srv/nfs/wordpress 10.0.2.0/24(rw,sync,no_subtree_check)" | sudo tee /etc/exports
 
-# Aplica los cambios
+# Aplica los exports y reinicia el servicio
 sudo exportfs -ra
 sudo systemctl enable nfs-kernel-server
 sudo systemctl restart nfs-kernel-server
@@ -59,12 +62,14 @@ sudo systemctl restart nfs-kernel-server
 
 Este script configura un servidor MariaDB para WordPress con configuración segura.
 
-### Componentes Clave:
+### Componentes Clave
+
 - **Instalación segura de MariaDB**: Instala el servidor y herramientas de red
 - **Creación de base de datos y usuario**: Configura WordPress con credenciales seguras
 - **Configuración de acceso remoto**: Permite conexiones desde los servidores web
 - **Medidas de seguridad**: Elimina usuarios y bases de datos por defecto
-- **Explicación Detallada:**
+
+### Explicación Detallada
 
 ```bash
 
@@ -115,12 +120,15 @@ sudo systemctl restart mariadb
 
 Este script configura servidores web Apache con PHP y monta el recurso NFS compartido.
 
-Componentes Clave:
+### Componentes Clave
+
 - **Instalación de Apache y PHP**: Configura el servidor web y el runtime de PHP
 - **Montaje del recurso NFS**: Accede al directorio compartido del servidor NFS
 - **Permisos y seguridad**: Establece los permisos adecuados para WordPress
 - **Instalación de WordPress**: Descarga e instala WordPress desde la fuente oficial
 - **Configuración inicial de WordPress**: Prepara la instalación básica
+
+### Explicación detallada
 
 ```bash
 
@@ -197,13 +205,14 @@ sudo systemctl restart apache2
 
 ## 4. Aplicación del Balanceador de Carga ([AWS_LB_CesarGarcia.sh](provisionamientos_AWS/AWS_LB_CesarGarcia.sh))
 
-Componentes Clave:
+### Componentes Clave
 
 - **Instalación de Apache y reto de CertBot**: Configura el servidor web y obtiene el certificado SSL
 - **Instalación de HAProxy**: Configura el balanceador de carga
 - **Redirección HTTP a HTTPS**: Redirige todo el tráfico entrante a HTTPS
 - **Configuración de balanceo**: Configura el balanceo entre los servidores web
 
+### Explicación detallada
 
 ```bash
 #!/bin/bash
@@ -224,8 +233,12 @@ sudo cat /etc/letsencrypt/live/$DOMAIN/fullchain.pem \
         | sudo tee /etc/haproxy/$DOMAIN.pem
 
 sudo apt install -y haproxy
+```
 
-# Se reescribe haproxy.cfg
+# Configuración de HAProxy
+```bash
+
+# Se reescribe haproxy.cfg. 
 sudo tee /etc/haproxy/haproxy.cfg >/dev/null <<'EOF'
 global
     maxconn 2048

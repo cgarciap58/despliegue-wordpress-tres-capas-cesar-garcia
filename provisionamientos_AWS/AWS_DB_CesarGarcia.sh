@@ -13,19 +13,14 @@ pass_wp="wppw"
 
 # Script equivalente a mysql_secure_installation
 sudo mariadb <<EOF
--- Remove anonymous users
 DELETE FROM mysql.user WHERE User='';
 
--- Remove remote root accounts
 DROP USER IF EXISTS 'root'@'%';
 
--- Optional: set root password for local login
 ALTER USER 'root'@'localhost' IDENTIFIED BY '$root_pass';
 
--- Remove test database
 DROP DATABASE IF EXISTS test;
 
--- Reload privilege tables
 FLUSH PRIVILEGES;
 EOF
 

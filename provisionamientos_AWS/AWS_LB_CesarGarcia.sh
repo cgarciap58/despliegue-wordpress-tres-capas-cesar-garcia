@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script for HAProxy Load Balancer with HTTPS termination
+# Script para balanceador de carga en AWS para WordPress pero que permite pasar el reto Certbot
 
 DOMAIN="wpdecesar.ddns.net"
 EMAIL="cgarciap58@iesalbarregas.es"
@@ -31,18 +31,20 @@ defaults
     timeout client 50s
     timeout server 50s
 
-# HTTP -> HTTPS redirect
+# Redirección HTTP -> HTTPS
 frontend http_front
     bind *:80
     redirect scheme https code 301
 
-# HTTPS termination
+# Terminación HTTPS
 frontend https_front
     bind *:443 ssl crt /etc/haproxy/$DOMAIN.pem
     option forwardfor
     http-request set-header X-Forwarded-Proto https
     default_backend wordpress_nodes
 
+
+# Backend para los servidores WordPress
 backend wordpress_nodes
     balance roundrobin
     option httpchk GET /
