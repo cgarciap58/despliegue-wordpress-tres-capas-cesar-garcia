@@ -20,6 +20,7 @@ El Wordpress está alojado en <a href="https://wpdecesar.ddns.net">wpdecesar.ddn
 - [3. Aprovisionamiento de los Servidores Web](#web-servers)
 - [4. Aplicación del Balanceador de Carga](#load-balancer)
 - [5. Configuración en AWS](#aws-configuration)
+- [6. Disclaimer](#disclaimer)
 
 <a name="nfs-server"></a>
 
@@ -326,10 +327,35 @@ Contamos con cinco instancias en total: una para el balanceador de carga y cuatr
 
 ![Route tables AWS](./capturasAWS/route_tables.png)
 
+Las tablas de ruta se aplican una a cada subred: 
+
+- **Wordpress-RT-Publica**: Permite acceso a Internet mediante IGW.
+
+- **Wordpress-RT-Privada-WS+NFS**: No tiene ruta por defecto, restringe acceso a Internet.
+
+- **Wordpress-RT-Privada-DB**: No tiene ruta por defecto, restringe acceso a Internet.
 
 ### Grupos de seguridad
 
 ![Grupos de seguridad AWS](./capturasAWS/grupos_seguridad.png)
+
+
+- **Wordpress-SG-Public-CesarGarcia**
+-- Entrante: Permite tráfico HTTP (80), HTTPS (443) y SSH (22) desde cualquier IP.
+-- Saliente: Permite todo el tráfico saliente.
+
+- **Wordpress-SG-WebServer-CesarGarcia**
+-- Entrante: Solo SSH desde el LB y HTTP desde el LB (balanceador)
+-- Saliente: Permite todo el tráfico saliente.
+
+- **Wordpress-SG-NFS-CesarGarcia**
+-- Entrante: Permite tráfico NFS solo desde los servidores web.
+-- Saliente: Permite todo el tráfico saliente.
+
+- **Wordpress-SG-DB-CesarGarcia**
+-- Entrante: Permite tráfico MySQL solo desde los servidores web, y SSH desde el servidor NFS (para mantenimiento).
+-- Saliente: Permite todo el tráfico saliente.
+
 
 ### IP Elástica y dominio
 
@@ -338,3 +364,11 @@ Contamos con cinco instancias en total: una para el balanceador de carga y cuatr
 Solo contamos con una en la 3.222.135.210, asociada al balanceador. Además, hemos conseguido un dominio y lo hemos asociado a esa IP utilizando noip. El dominio es wpdecesar.ddns.net.
 
 ![Configuración NoIP](./capturasAWS/noip.png)
+
+# Disclaimer
+
+Este trabajo fue realizado por César García y se hizo para la asignatura de Implantación de Aplicaciones Web enseñada por Carlos González.
+
+Seguramente, contenga fallos de seguridad y bajo ningún concepto debe considerarse una implementación segura para un entorno de producción. Es simplemente un ejercicio académico.
+
+Si este código es útil para ti de cualquier forma, por favor, menciona la fuente, me llevó muchas, muchas, muchas horas de trabajo. ¡Gracias!
