@@ -331,7 +331,10 @@ Contamos con cinco instancias en total: una para el balanceador de carga y cuatr
 
 ![Grupos de seguridad AWS](./capturasAWS/grupos_seguridad.png)
 
-### IP Elástica
+### IP Elástica y dominio
 
 ![IP Elástica AWS](./capturasAWS/ip_elastica.png)
 
+Solo contamos con una en la 3.222.135.210, asociada al balanceador. Además, hemos conseguido un dominio y lo hemos asociado a esa IP utilizando noip. El dominio es wpdecesar.ddns.net.
+
+![Configuración NoIP](./capturasAWS/noip.png)
