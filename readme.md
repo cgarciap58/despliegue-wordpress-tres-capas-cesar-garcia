@@ -9,6 +9,10 @@ Este proyecto contiene scripts de aprovisionamiento para desplegar un sitio de W
 
 El Wordpress está alojado en <a href="https://wpdecesar.ddns.net">wpdecesar.ddns.net</a>
 
+# Prueba de funcionamiento
+
+![Prueba de funcionamiento](CapturaPantallaWP.png)
+
 # Índice 
 
 - [1. Aprovisionamiento del Servidor NFS](#nfs-server)
