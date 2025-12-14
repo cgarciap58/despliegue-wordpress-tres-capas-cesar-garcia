@@ -11,7 +11,7 @@ El Wordpress está alojado en <a href="https://wpdecesar.ddns.net">wpdecesar.ddn
 
 # Prueba de funcionamiento
 
-![Prueba de funcionamiento](CapturaPantallaWP.png)
+![Prueba de funcionamiento](./CapturaPantallaWP.png)
 
 # Índice 
 
