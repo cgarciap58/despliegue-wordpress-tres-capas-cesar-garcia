@@ -10,10 +10,10 @@ Este proyecto contiene scripts de aprovisionamiento para desplegar un sitio de W
 
 # Índice 
 
-- [1. Servidor NFS](#1-aprovisionamiento-del-servidor-nfs)
-- [2. Servidor de Base de Datos](#2-aprovisionamiento-del-servidor-de-base-de-datos)
-- [3. Servidores Web](#3-aprovisionamiento-de-los-servidores-web)
-- [4. Balanceador de Carga](#4-aplicación-del-balanceador-de-carga)
+- [1. Aprovisionamiento del Servidor NFS](#1-aprovisionamiento-del-servidor-nfs)
+- [2. Aprovisionamiento del Servidor de Base de Datos](#2-aprovisionamiento-del-servidor-de-base-de-datos)
+- [3. Aprovisionamiento de los Servidores Web](#3-aprovisionamiento-de-los-servidores-web)
+- [4. Aplicación del Balanceador de Carga](#4-aplicación-del-balanceador-de-carga)
 
 
 ## 1. Aprovisionamiento del Servidor NFS ([AWS_NFS_CesarGarcia.sh](provisionamientos_AWS/AWS_NFS_CesarGarcia.sh))
