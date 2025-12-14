@@ -7,6 +7,15 @@ Este proyecto contiene scripts de aprovisionamiento para desplegar un sitio de W
 3. **Servidores Web** - Múltiples servidores Apache con PHP
 4. **Balanceador de Carga** - HAProxy con terminación SSL
 
+
+# Índice 
+
+- [1. Servidor NFS](#1-aprovisionamiento-del-servidor-nfs)
+- [2. Servidor de Base de Datos](#2-aprovisionamiento-del-servidor-de-base-de-datos)
+- [3. Servidores Web](#3-aprovisionamiento-de-los-servidores-web)
+- [4. Balanceador de Carga](#4-aplicación-del-balanceador-de-carga)
+
+
 ## 1. Aprovisionamiento del Servidor NFS ([AWS_NFS_CesarGarcia.sh](provisionamientos_AWS/AWS_NFS_CesarGarcia.sh))
 
 Este script configura un servidor NFS (Network File System) para compartir archivos de WordPress entre múltiples servidores web.
@@ -237,7 +246,7 @@ frontend https_front
 backend wordpress_nodes
     balance roundrobin
     option httpchk GET /
-    server ws1 10.0.2.235:80 check
+    server ws1 10.0.2.235:80 check 
     server ws2 10.0.2.141:80 check
 EOF
 
