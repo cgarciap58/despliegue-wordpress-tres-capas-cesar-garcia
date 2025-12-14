@@ -15,7 +15,9 @@ Este proyecto contiene scripts de aprovisionamiento para desplegar un sitio de W
 - [3. Aprovisionamiento de los Servidores Web](#web-servers)
 - [4. Aplicación del Balanceador de Carga](#load-balancer)
 
-<h2 id="nfs-server">1. Aprovisionamiento del Servidor NFS ([AWS_NFS_CesarGarcia.sh](provisionamientos_AWS/AWS_NFS_CesarGarcia.sh))</h2>
+<a name="nfs-server"></a>
+
+## 1. Aprovisionamiento del Servidor NFS ([AWS_NFS_CesarGarcia.sh](provisionamientos_AWS/AWS_NFS_CesarGarcia.sh))
 
 Este script configura un servidor NFS (Network File System) para compartir archivos de WordPress entre múltiples servidores web.
 
@@ -50,7 +52,10 @@ sudo systemctl restart nfs-kernel-server
 
 ```
 
-<h2 id="database-server">2. Aprovisionamiento del Servidor de Base de Datos ([AWS_DB_CesarGarcia.sh](provisionamientos_AWS/AWS_DB_CesarGarcia.sh))</h2>
+<a name="database-server"></a>
+
+
+## 2. Aprovisionamiento del Servidor de Base de Datos ([AWS_DB_CesarGarcia.sh](provisionamientos_AWS/AWS_DB_CesarGarcia.sh))
 
 Este script configura un servidor MariaDB para WordPress con configuración segura.
 
@@ -104,7 +109,7 @@ echo "MariaDB configurado para aceptar conexiones remotas en 10.0.3.113"
 sudo systemctl restart mariadb
 ```
 
-<h2 id="web-servers">3. Aprovisionamiento de los Servidores Web ([AWS_WS_CesarGarcia.sh](provisionamientos_AWS/AWS_WS_CesarGarcia.sh))</h2>
+## 3. Aprovisionamiento de los Servidores Web ([AWS_WS_CesarGarcia.sh](provisionamientos_AWS/AWS_WS_CesarGarcia.sh))
 
 Este script configura servidores web Apache con PHP y monta el recurso NFS compartido.
 
@@ -186,7 +191,7 @@ sudo systemctl restart apache2
 ```
 
 
-<h2 id="load-balancer">4. Aplicación del Balanceador de Carga [AWS_LB_CesarGarcia.sh](provisionamientos_AWS/AWS_LB_CesarGarcia.sh)</h2>
+## 4. Aplicación del Balanceador de Carga [AWS_LB_CesarGarcia.sh](provisionamientos_AWS/AWS_LB_CesarGarcia.sh)
 
 Componentes Clave:
 
