@@ -17,7 +17,7 @@ Este proyecto contiene scripts de aprovisionamiento para desplegar un sitio de W
 
 <a name="nfs-server"></a>
 
-## 1. Aprovisionamiento del Servidor NFS ([AWS_NFS_CesarGarcia.sh](provisionamientos_AWS/AWS_NFS_CesarGarcia.sh))
+## 1. Aprovisionamiento del Servidor NFS [AWS_NFS_CesarGarcia.sh](provisionamientos_AWS/AWS_NFS_CesarGarcia.sh)
 
 Este script configura un servidor NFS (Network File System) para compartir archivos de WordPress entre múltiples servidores web.
 
