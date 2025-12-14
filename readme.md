@@ -311,11 +311,19 @@ Las subredes están configuradas para soportar la arquitectura de alta disponibi
 
 ### Instancias
 
+![Instancias AWS](./capturasAWS/instancias.png)
+
 Contamos con cinco instancias en total: una para el balanceador de carga y cuatro para los servidores web.
-- **Balanceador**: cesarGarciaLB (10.0.2.100)
-- **Servidores web**: ws1 (10.0.2.235), ws2 (10.0.2.141), ws3 (10.0.2.150), ws4 (10.0.2.160)
+- **Balanceador**: Asociado a una ip elástica para acceso externo. Más detalles en la sección de IP Elástica. La IP privada es la 10.0.1.90 (asignada dinámicamente por AWS). Esta es la única instancia en la red pública.
+
+- **Servidores web**: WS1 (10.0.2.235) y WS2 (10.0.2.141). Tienen Apache instalados, y la carpeta NFS montada. Se encargan de descargar Wordpress si aún no está instalado, y de servir las páginas web después de que el balanceador se lo pide. Se alternan, mediante sistema round robin.
+
+- **Servidor NFS**: nfs (10.0.2.101), aloja los archivos de WordPress compartidos entre los servidores web y es accesible solo desde los servidores web. Le da permisos a los usuarios www-data para escribir en el directorio compartido, de tal forma que WordPress puede funcionar sin problema.
+
+- **Base de datos**: Servidor con BBDD MariaDB, alojado en la subred de base de datos y accesible solo desde los equipos en la subred 10.0.2.0/24 para dar acceso a los servidores web, evitando el acceso directo desde la red pública.
 
 ### Route tables
+
 
 ### Grupos de seguridad
 
